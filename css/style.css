@@ -1,0 +1,11 @@
+#container {
+    background-color: #4caf50;
+    width: 400px;
+    margin: 50px auto;
+}
+#court {
+    position: relative;
+    height: 400px;
+    width: 400px;
+    background-color: #4caf50;
+}
