@@ -118,9 +118,7 @@ var app = angular.module('store', [ ]);
                 //up
                 y_pos = -20;
                 if(snake.tails.length > 1 && snake.tails[0].y_pos < snake.tails[1].y_pos || snake.tails[0].y_pos === snake.tails[1].y_pos ) {
-                    for(var pass = 0; pass < 3; pass++) {
-                        moveSnakeUpDown(y_pos);
-                    }
+                    moveSnakeUpDown(y_pos);
                 }
             }
             else if (e.keyCode == '40') {
@@ -146,58 +144,47 @@ var app = angular.module('store', [ ]);
             }
 
             function moveSnakeLeftRight(x_pos){
-                //setTimeout(function() {
-
-                    for (var i = 0; i < snake.tails.length; i++) {
-                        if (!snake.tails[i].tail_type) {
-                            last_pos_x = snake.tails[i].x_pos;
-                            last_pos_y = snake.tails[i].y_pos;
-                            snake.tails[i].set_x_pos(snake.tails[i].x_pos + x_pos);
-                            if (snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
-                                playSound();
-                                snake.addTail();
-                                CreateFruit();
-                            }
-                        } else {
-                            var temp_last_pos_x = snake.tails[i].x_pos;
-                            var temp_last_pos_y = snake.tails[i].y_pos;
-                            snake.tails[i].set_y_pos(last_pos_y);
-                            snake.tails[i].set_x_pos(last_pos_x);
-                            last_pos_x = temp_last_pos_x;
-                            last_pos_y = temp_last_pos_y;
+                for( var i=0; i<snake.tails.length; i++) {
+                    if(!snake.tails[i].tail_type) {
+                        last_pos_x = snake.tails[i].x_pos;
+                        last_pos_y = snake.tails[i].y_pos;
+                        snake.tails[i].set_x_pos(snake.tails[i].x_pos + x_pos);
+                        if(snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
+                            playSound();
+                            snake.addTail();
+                            CreateFruit();
                         }
+                    } else {
+                        var temp_last_pos_x = snake.tails[i].x_pos;
+                        var temp_last_pos_y = snake.tails[i].y_pos;
+                        snake.tails[i].set_y_pos(last_pos_y);
+                        snake.tails[i].set_x_pos(last_pos_x);
+                        last_pos_x = temp_last_pos_x;
+                        last_pos_y = temp_last_pos_y;
                     }
-                //}, 10000);
+                }
             };
             function moveSnakeUpDown(y_pos){
-
-                for( var i=0; i<snake.tails.length; i++) {
-                    setTimeout(function() {
-                        if(!snake.tails[i].tail_type) {
-                            last_pos_x = snake.tails[i].x_pos;
-                            last_pos_y = snake.tails[i].y_pos;
-                            snake.tails[i].set_y_pos(snake.tails[i].y_pos + y_pos);
-                            if(snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
-                                playSound();
-                                snake.addTail();
-                                CreateFruit();
-                            }
-                        } else {
-                            var temp_last_pos_x = snake.tails[i].x_pos;
-                            var temp_last_pos_y = snake.tails[i].y_pos;
-                            snake.tails[i].set_y_pos(last_pos_y);
-                            snake.tails[i].set_x_pos(last_pos_x);
-                            last_pos_x = temp_last_pos_x;
-                            last_pos_y = temp_last_pos_y;
+                 for( var i=0; i<snake.tails.length; i++) {
+                    if(!snake.tails[i].tail_type) {
+                        last_pos_x = snake.tails[i].x_pos;
+                        last_pos_y = snake.tails[i].y_pos;
+                        snake.tails[i].set_y_pos(snake.tails[i].y_pos + y_pos);
+                        if(snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
+                            playSound();
+                            snake.addTail();
+                            CreateFruit();
                         }
-                    }, 1000);
+                    } else {
+                        var temp_last_pos_x = snake.tails[i].x_pos;
+                        var temp_last_pos_y = snake.tails[i].y_pos;
+                        snake.tails[i].set_y_pos(last_pos_y);
+                        snake.tails[i].set_x_pos(last_pos_x);
+                        last_pos_x = temp_last_pos_x;
+                        last_pos_y = temp_last_pos_y;
+                    }
                 }
 
-
-            };
-
-            function setTimeOutFunc(i) {
-                
             };
 
             function playSound(){
