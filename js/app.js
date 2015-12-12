@@ -77,71 +77,69 @@ var Snake = function() {
 };
 var app = angular.module('store', [ ]);
     app.controller('CourtController', function() {
+        var direction = '38';
+        var last_pos_x = 0;
+        var last_pos_y = 0;
+        var x_pos = 0;
+        var y_pos = 0;
         var snake = new Snake();
         var fruits = [];
+
+        document.onkeydown = setDirection;
+        function setDirection(e) {
+             e = e || window.event;
+             direction = e.keyCode;
+         };
 
         this.initFruit = function() {
           CreateFruit();
         };
-
         this.initSnake = function() {
                 snake.addHead();
                 snake.addTail();
         };
-        this.extendSnake = function() {
-            snake.addTail();
-        };
-        function CreateFruit(){
-            var fruits_src = ['image/banana.png', 'image/apple.png', 'image/strawberry.png', 'image/cherry.png'];
-            var num_x = Math.floor((Math.random() * 400) + 1);
-            var num_y = Math.floor((Math.random() * 400) + 1);
-            num_x = parseInt(num_x / 20) * 20;
-            num_y = parseInt(num_y / 20) * 20;
-            var num_fruit = Math.floor( Math.random() * ( 1 + 4 - 1 ) ) + 1;
-            var fruit = new Fruit(20, 20, num_x, num_y, fruits_src[num_fruit - 1]);
-            fruit.initialize();
-            if( fruits.length >= 1) {
-                fruits[0].imgEl.parentNode.removeChild(fruits[0].imgEl);
-                fruits.pop();
-            }
-            fruits.push(fruit);
-        };
-        var last_pos_x = 0;
-        var last_pos_y = 0;
-        document.onkeydown = moveSnake;
+        this.initSnakeMove = function() {
+            var i = 0; var n = 100;
+            setInterval(function() { i++; if (i < n) {
+                console.log("Hello");
+               if (direction == '38') {
+                    //up
+                    y_pos = -20;
+                    if(snake.tails.length > 1 && snake.tails[0].y_pos < snake.tails[1].y_pos || snake.tails[0].y_pos === snake.tails[1].y_pos ) {
+                        moveSnakeUpDown(y_pos);
+                    }else{
+                        direction = '40';
+                    }
+               }
+               else if (direction == '40') {
+                    //down
+                    y_pos = 20;
+                    if(snake.tails.length > 1 && snake.tails[0].y_pos > snake.tails[1].y_pos || snake.tails[0].y_pos === snake.tails[1].y_pos) {
+                        moveSnakeUpDown(y_pos);
+                    }else{
+                        direction = "38";
+                    }
+               }
+               else if (direction == '37') {
+                    //left
+                    x_pos = -20;
+                    if(snake.tails.length > 1 && snake.tails[0].x_pos < snake.tails[1].x_pos || snake.tails[0].x_pos === snake.tails[1].x_pos ) {
+                        moveSnakeLeftRight(x_pos);
+                    }else{
+                        direction = "39";
+                    }
+               }
+                else if (direction == '39') {
+                    //right
+                    x_pos = 20;
+                    if(snake.tails.length > 1 && snake.tails[0].x_pos > snake.tails[1].x_pos || snake.tails[0].x_pos === snake.tails[1].x_pos ) {
+                        moveSnakeLeftRight(x_pos);
+                    }else{
+                        direction = "37";
+                    }
+               }
 
-        function moveSnake(e)  {
-
-            e = e || window.event;
-            var y_pos = 0; var x_pos = 0;
-            if (e.keyCode == '38') {
-                //up
-                y_pos = -20;
-                if(snake.tails.length > 1 && snake.tails[0].y_pos < snake.tails[1].y_pos || snake.tails[0].y_pos === snake.tails[1].y_pos ) {
-                    moveSnakeUpDown(y_pos);
-                }
-            }
-            else if (e.keyCode == '40') {
-                //down
-                y_pos = 20;
-                if(snake.tails.length > 1 && snake.tails[0].y_pos > snake.tails[1].y_pos || snake.tails[0].y_pos === snake.tails[1].y_pos) {
-                    moveSnakeUpDown(y_pos);
-                }
-            }
-            else if (e.keyCode == '37') {
-                //left
-                x_pos = -20;
-                if(snake.tails.length > 1 && snake.tails[0].x_pos < snake.tails[1].x_pos || snake.tails[0].x_pos === snake.tails[1].x_pos ) {
-                    moveSnakeLeftRight(x_pos);
-                }
-            }
-            else if (e.keyCode == '39') {
-                //right
-                x_pos = 20;
-                if(snake.tails.length > 1 && snake.tails[0].x_pos > snake.tails[1].x_pos || snake.tails[0].x_pos === snake.tails[1].x_pos ) {
-                    moveSnakeLeftRight(x_pos);
-                }
-            }
+            } }, 500);
 
             function moveSnakeLeftRight(x_pos){
                 for( var i=0; i<snake.tails.length; i++) {
@@ -192,4 +190,24 @@ var app = angular.module('store', [ ]);
                 snd.play();
             };
         };
+        this.extendSnake = function() {
+            snake.addTail();
+        };
+
+        function CreateFruit(){
+            var fruits_src = ['image/banana.png', 'image/apple.png', 'image/strawberry.png', 'image/cherry.png'];
+            var num_x = Math.floor((Math.random() * 400) + 1);
+            var num_y = Math.floor((Math.random() * 400) + 1);
+            num_x = parseInt(num_x / 20) * 20;
+            num_y = parseInt(num_y / 20) * 20;
+            var num_fruit = Math.floor( Math.random() * ( 1 + 4 - 1 ) ) + 1;
+            var fruit = new Fruit(20, 20, num_x, num_y, fruits_src[num_fruit - 1]);
+            fruit.initialize();
+            if( fruits.length >= 1) {
+                fruits[0].imgEl.parentNode.removeChild(fruits[0].imgEl);
+                fruits.pop();
+            }
+            fruits.push(fruit);
+        };
+
     });
