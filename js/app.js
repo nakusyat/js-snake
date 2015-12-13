@@ -1,3 +1,4 @@
+
 var Tail = function(width_s, height_s, x_pos, y_pos, tail_type){
     this.tail_type = tail_type;
     this.width = width_s;
@@ -51,37 +52,42 @@ var Fruit = function(width_s, height_s, x_pos, y_pos, src) {
         this.imgEl.style.left = this.x_pos + 'px';
     };
 };
+
 var Snake = function() {
     this.tails = [];
     this.addHead = function() {
-        var snakeHead = new Tail(20, 20, 20, 60, false);
+        var snakeHead = new Tail(20, 20, 60, 60, false);
         snakeHead.color = "#ffab40";
         snakeHead.initialize();
         this.tails.push(snakeHead);
     };
     this.addTail = function() {
         var tail_length = this.tails.length;
-        var x_pos = 20;
-        var y_pos = 80;
+        var x_pos = this.tails[0].x_pos;
+        var y_pos = this.tails[0].y_pos + this.tails[0].height;
 
         if( tail_length ) {
             var lastTail = this.tails[tail_length - 1];
                 x_pos = lastTail.x_pos;
-                y_pos = lastTail.y_pos + 20;
+                y_pos = lastTail.y_pos + this.tails[0].height;
         }
 
-        var snakeTail = new Tail(20, 20, x_pos, y_pos, true);
+        var snakeTail = new Tail(this.tails[0].width, this.tails[0].height, x_pos, y_pos, true);
         snakeTail.initialize();
         this.tails.push(snakeTail);
     };
 };
+
 var app = angular.module('store', [ ]);
-    app.controller('CourtController', function() {
+    app.controller('CourtController', function($scope) {
         var direction = '38';
         var last_pos_x = 0;
         var last_pos_y = 0;
         var x_pos = 0;
         var y_pos = 0;
+        var wall_width = document.getElementById('court').offsetWidth;
+        var wall_height = document.getElementById('court').offsetHeight;
+        var control = true;
         var snake = new Snake();
         var fruits = [];
 
@@ -94,17 +100,18 @@ var app = angular.module('store', [ ]);
         this.initFruit = function() {
           CreateFruit();
         };
+
         this.initSnake = function() {
-                snake.addHead();
-                snake.addTail();
+            $scope.eaten_point = 0;
+            snake.addHead();
+            snake.addTail();
         };
+
         this.initSnakeMove = function() {
-            var i = 0; var n = 100;
-            setInterval(function() { i++; if (i < n) {
-                console.log("Hello");
+            setInterval(function() { if(control) {
                if (direction == '38') {
                     //up
-                    y_pos = -20;
+                    y_pos = -1 * snake.tails[0].height;
                     if(snake.tails.length > 1 && snake.tails[0].y_pos < snake.tails[1].y_pos || snake.tails[0].y_pos === snake.tails[1].y_pos ) {
                         moveSnakeUpDown(y_pos);
                     }else{
@@ -113,7 +120,7 @@ var app = angular.module('store', [ ]);
                }
                else if (direction == '40') {
                     //down
-                    y_pos = 20;
+                    y_pos = snake.tails[0].height;
                     if(snake.tails.length > 1 && snake.tails[0].y_pos > snake.tails[1].y_pos || snake.tails[0].y_pos === snake.tails[1].y_pos) {
                         moveSnakeUpDown(y_pos);
                     }else{
@@ -122,7 +129,7 @@ var app = angular.module('store', [ ]);
                }
                else if (direction == '37') {
                     //left
-                    x_pos = -20;
+                    x_pos = -1*snake.tails[0].width;
                     if(snake.tails.length > 1 && snake.tails[0].x_pos < snake.tails[1].x_pos || snake.tails[0].x_pos === snake.tails[1].x_pos ) {
                         moveSnakeLeftRight(x_pos);
                     }else{
@@ -131,26 +138,32 @@ var app = angular.module('store', [ ]);
                }
                 else if (direction == '39') {
                     //right
-                    x_pos = 20;
+                    x_pos = snake.tails[0].width;;
                     if(snake.tails.length > 1 && snake.tails[0].x_pos > snake.tails[1].x_pos || snake.tails[0].x_pos === snake.tails[1].x_pos ) {
                         moveSnakeLeftRight(x_pos);
                     }else{
                         direction = "37";
                     }
                }
-
             } }, 500);
 
             function moveSnakeLeftRight(x_pos){
-                for( var i=0; i<snake.tails.length; i++) {
+                for( var i=0; i<snake.tails.length; i++){
                     if(!snake.tails[i].tail_type) {
                         last_pos_x = snake.tails[i].x_pos;
                         last_pos_y = snake.tails[i].y_pos;
                         snake.tails[i].set_x_pos(snake.tails[i].x_pos + x_pos);
                         if(snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
-                            playSound();
+                            playSound("sound/bite.wav");
                             snake.addTail();
                             CreateFruit();
+                            $scope.$apply(function() {
+                                $scope.eaten_point += 1;
+                            });
+                        }
+                        if(snake.tails[i].x_pos < 0 || snake.tails[i].x_pos >= wall_width) {
+                            control = false;
+                            playSound("sound/boo.wav");
                         }
                     } else {
                         var temp_last_pos_x = snake.tails[i].x_pos;
@@ -163,15 +176,22 @@ var app = angular.module('store', [ ]);
                 }
             };
             function moveSnakeUpDown(y_pos){
-                 for( var i=0; i<snake.tails.length; i++) {
+                 for( var i=0; i<snake.tails.length; i++){
                     if(!snake.tails[i].tail_type) {
                         last_pos_x = snake.tails[i].x_pos;
                         last_pos_y = snake.tails[i].y_pos;
                         snake.tails[i].set_y_pos(snake.tails[i].y_pos + y_pos);
                         if(snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
-                            playSound();
+                            playSound("sound/bite.wav");
                             snake.addTail();
                             CreateFruit();
+                            $scope.$apply(function() {
+                                $scope.eaten_point += 1;
+                            });
+                        }
+                        if(snake.tails[i].y_pos < 0 || snake.tails[i].y_pos >= wall_height) {
+                            control = false;
+                            playSound("sound/boo.wav");
                         }
                     } else {
                         var temp_last_pos_x = snake.tails[i].x_pos;
@@ -185,8 +205,8 @@ var app = angular.module('store', [ ]);
 
             };
 
-            function playSound(){
-                var snd = new Audio("sound/bite.wav"); // buffers automatically when created
+            function playSound(sound){
+                var snd = new Audio(sound); // buffers automatically when created
                 snd.play();
             };
         };
@@ -196,12 +216,12 @@ var app = angular.module('store', [ ]);
 
         function CreateFruit(){
             var fruits_src = ['image/banana.png', 'image/apple.png', 'image/strawberry.png', 'image/cherry.png'];
-            var num_x = Math.floor((Math.random() * 400) + 1);
-            var num_y = Math.floor((Math.random() * 400) + 1);
-            num_x = parseInt(num_x / 20) * 20;
-            num_y = parseInt(num_y / 20) * 20;
+            var num_x = Math.floor((Math.random() * document.getElementById('court').offsetWidth) + 1);
+            var num_y = Math.floor((Math.random() * document.getElementById('court').offsetHeight) + 1);
+            num_x = parseInt(num_x / snake.tails[0].width) * snake.tails[0].width;
+            num_y = parseInt(num_y / snake.tails[0].height) * snake.tails[0].height;
             var num_fruit = Math.floor( Math.random() * ( 1 + 4 - 1 ) ) + 1;
-            var fruit = new Fruit(20, 20, num_x, num_y, fruits_src[num_fruit - 1]);
+            var fruit = new Fruit(snake.tails[0].width, snake.tails[0].height, num_x, num_y, fruits_src[num_fruit - 1]);
             fruit.initialize();
             if( fruits.length >= 1) {
                 fruits[0].imgEl.parentNode.removeChild(fruits[0].imgEl);
