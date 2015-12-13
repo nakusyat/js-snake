@@ -10,6 +10,7 @@
     <div id="container" ng-controller="CourtController as court">
         <div ng-init="court.initSnake();court.initFruit();court.initSnakeMove();" id="court"></div>
         <div id="point">{{eaten_point}}</div>
+        <button id="reload" ng-show="court.restart" ng-click="court.reloadGame()">Restart</button>
     </div>
 </body>
 </html>

@@ -17,3 +17,8 @@
     right: 220px;
     top: 50px;
 }
+#reload {
+    position: absolute;
+    right: 200px;
+    top: 120px;
+}

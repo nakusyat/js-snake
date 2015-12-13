@@ -107,6 +107,12 @@ var app = angular.module('store', [ ]);
             snake.addTail();
         };
 
+        this.reloadGame = function(){
+            location.reload();
+        };
+
+        this.restart = false;
+
         this.initSnakeMove = function() {
             setInterval(function() { if(control) {
                if (direction == '38') {
@@ -164,6 +170,9 @@ var app = angular.module('store', [ ]);
                         if(snake.tails[i].x_pos < 0 || snake.tails[i].x_pos >= wall_width) {
                             control = false;
                             playSound("sound/boo.wav");
+                            $scope.$apply(function() {
+                                $scope.court.restart = true;
+                            });
                         }
                     } else {
                         var temp_last_pos_x = snake.tails[i].x_pos;
@@ -192,6 +201,9 @@ var app = angular.module('store', [ ]);
                         if(snake.tails[i].y_pos < 0 || snake.tails[i].y_pos >= wall_height) {
                             control = false;
                             playSound("sound/boo.wav");
+                             $scope.$apply(function() {
+                                $scope.court.restart = true;
+                            });
                         }
                     } else {
                         var temp_last_pos_x = snake.tails[i].x_pos;
