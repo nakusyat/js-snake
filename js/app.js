@@ -90,6 +90,12 @@ var app = angular.module('store', [ ]);
         var control = true;
         var snake = new Snake();
         var fruits = [];
+        var snakeSpeed = 500;
+        var level = 1;
+        var levelScore = 2;
+        var myTimer;
+
+        this.restart = false;
 
         document.onkeydown = setDirection;
         function setDirection(e) {
@@ -111,11 +117,14 @@ var app = angular.module('store', [ ]);
             location.reload();
         };
 
-        this.restart = false;
-
         this.initSnakeMove = function() {
-            setInterval(function() { if(control) {
-               if (direction == '38') {
+
+            myTimer = setInterval(function() { if(control) {
+               changeSnakeDirection();
+            } }, snakeSpeed);
+
+            function changeSnakeDirection(){
+                if (direction == '38') {
                     //up
                     y_pos = -1 * snake.tails[0].height;
                     if(snake.tails.length > 1 && snake.tails[0].y_pos < snake.tails[1].y_pos || snake.tails[0].y_pos === snake.tails[1].y_pos ) {
@@ -151,70 +160,92 @@ var app = angular.module('store', [ ]);
                         direction = "37";
                     }
                }
-            } }, 500);
-
+            }
             function moveSnakeLeftRight(x_pos){
-                for( var i=0; i<snake.tails.length; i++){
-                    if(!snake.tails[i].tail_type) {
-                        last_pos_x = snake.tails[i].x_pos;
-                        last_pos_y = snake.tails[i].y_pos;
-                        snake.tails[i].set_x_pos(snake.tails[i].x_pos + x_pos);
-                        if(snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
-                            playSound("sound/bite.wav");
-                            snake.addTail();
-                            CreateFruit();
-                            $scope.$apply(function() {
-                                $scope.eaten_point += 1;
-                            });
-                        }
-                        if(snake.tails[i].x_pos < 0 || snake.tails[i].x_pos >= wall_width) {
+                if(snake.tails[0].x_pos + x_pos < 0 || snake.tails[0].x_pos + x_pos >= wall_width) {
                             control = false;
                             playSound("sound/boo.wav");
                             $scope.$apply(function() {
                                 $scope.court.restart = true;
                             });
+                } else {
+                    for( var i=0; i<snake.tails.length; i++){
+                        if(!snake.tails[i].tail_type) {
+                            last_pos_x = snake.tails[i].x_pos;
+                            last_pos_y = snake.tails[i].y_pos;
+
+                            snake.tails[i].set_x_pos(snake.tails[i].x_pos + x_pos);
+                            if(snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
+                                playSound("sound/bite.wav");
+                                snake.addTail();
+                                CreateFruit();
+                                $scope.$apply(function() {
+                                    $scope.eaten_point += 1;
+                                    if($scope.eaten_point === levelScore) {
+                                        level += 1;
+                                        snakeSpeed -= 100;
+                                        levelScore = 2 * level;
+                                        clearInterval( myTimer );
+                                        myTimer = setInterval(function() { if(control) {
+                                            changeSnakeDirection();
+                                        } }, snakeSpeed);
+                                    }
+                                });
+                            }
+
+                        } else {
+                            var temp_last_pos_x = snake.tails[i].x_pos;
+                            var temp_last_pos_y = snake.tails[i].y_pos;
+                            snake.tails[i].set_y_pos(last_pos_y);
+                            snake.tails[i].set_x_pos(last_pos_x);
+                            last_pos_x = temp_last_pos_x;
+                            last_pos_y = temp_last_pos_y;
                         }
-                    } else {
-                        var temp_last_pos_x = snake.tails[i].x_pos;
-                        var temp_last_pos_y = snake.tails[i].y_pos;
-                        snake.tails[i].set_y_pos(last_pos_y);
-                        snake.tails[i].set_x_pos(last_pos_x);
-                        last_pos_x = temp_last_pos_x;
-                        last_pos_y = temp_last_pos_y;
                     }
                 }
             };
             function moveSnakeUpDown(y_pos){
-                 for( var i=0; i<snake.tails.length; i++){
-                    if(!snake.tails[i].tail_type) {
-                        last_pos_x = snake.tails[i].x_pos;
-                        last_pos_y = snake.tails[i].y_pos;
-                        snake.tails[i].set_y_pos(snake.tails[i].y_pos + y_pos);
-                        if(snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
-                            playSound("sound/bite.wav");
-                            snake.addTail();
-                            CreateFruit();
-                            $scope.$apply(function() {
-                                $scope.eaten_point += 1;
-                            });
+                if(snake.tails[0].y_pos + y_pos < 0 || snake.tails[0].y_pos + y_pos >= wall_height) {
+                    control = false;
+                    playSound("sound/boo.wav");
+                     $scope.$apply(function() {
+                        $scope.court.restart = true;
+                    });
+                } else {
+                    for (var i = 0; i < snake.tails.length; i++) {
+                        if (!snake.tails[i].tail_type) {
+                            last_pos_x = snake.tails[i].x_pos;
+                            last_pos_y = snake.tails[i].y_pos;
+
+                            snake.tails[i].set_y_pos(snake.tails[i].y_pos + y_pos);
+                            if (snake.tails[i].y_pos === fruits[0].y_pos && snake.tails[i].x_pos === fruits[0].x_pos) {
+                                playSound("sound/bite.wav");
+                                snake.addTail();
+                                CreateFruit();
+                                $scope.$apply(function () {
+                                    $scope.eaten_point += 1;
+                                    if($scope.eaten_point === levelScore) {
+                                        level += 1;
+                                        snakeSpeed -= 100;
+                                        levelScore = 2 * level;
+                                        clearInterval( myTimer );
+                                        myTimer = setInterval(function() { if(control) {
+                                            changeSnakeDirection();
+                                        } }, snakeSpeed);
+                                    }
+                                });
+                            }
+
+                        } else {
+                            var temp_last_pos_x = snake.tails[i].x_pos;
+                            var temp_last_pos_y = snake.tails[i].y_pos;
+                            snake.tails[i].set_y_pos(last_pos_y);
+                            snake.tails[i].set_x_pos(last_pos_x);
+                            last_pos_x = temp_last_pos_x;
+                            last_pos_y = temp_last_pos_y;
                         }
-                        if(snake.tails[i].y_pos < 0 || snake.tails[i].y_pos >= wall_height) {
-                            control = false;
-                            playSound("sound/boo.wav");
-                             $scope.$apply(function() {
-                                $scope.court.restart = true;
-                            });
-                        }
-                    } else {
-                        var temp_last_pos_x = snake.tails[i].x_pos;
-                        var temp_last_pos_y = snake.tails[i].y_pos;
-                        snake.tails[i].set_y_pos(last_pos_y);
-                        snake.tails[i].set_x_pos(last_pos_x);
-                        last_pos_x = temp_last_pos_x;
-                        last_pos_y = temp_last_pos_y;
                     }
                 }
-
             };
 
             function playSound(sound){
@@ -222,6 +253,7 @@ var app = angular.module('store', [ ]);
                 snd.play();
             };
         };
+
         this.extendSnake = function() {
             snake.addTail();
         };
@@ -232,6 +264,10 @@ var app = angular.module('store', [ ]);
             var num_y = Math.floor((Math.random() * document.getElementById('court').offsetHeight) + 1);
             num_x = parseInt(num_x / snake.tails[0].width) * snake.tails[0].width;
             num_y = parseInt(num_y / snake.tails[0].height) * snake.tails[0].height;
+            if( num_x === document.getElementById('court').offsetWidth || num_y === document.getElementById('court').offsetHeight) {
+                num_x -= snake.tails[0].width;
+                num_y -= snake.tails[0].height;
+            }
             var num_fruit = Math.floor( Math.random() * ( 1 + 4 - 1 ) ) + 1;
             var fruit = new Fruit(snake.tails[0].width, snake.tails[0].height, num_x, num_y, fruits_src[num_fruit - 1]);
             fruit.initialize();
