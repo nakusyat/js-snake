@@ -1,22 +1,22 @@
-#container {
-    background-color: #4caf50;
-    width: 400px;
-    margin: 50px auto;
-}
 #court {
     position: relative;
-    height: 400px;
-    width: 400px;
     background-color: #4caf50;
+    margin: 50px auto;
+    display: inline-block;
 }
 #point {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    font-size: 30px;
-    right: 220px;
-    top: 50px;
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 50px;
+    width: 150px;
+    font-size: 20px;
+
 }
+#main {
+    width: 700px;
+    margin: auto;
+}
+
 #reload {
     position: absolute;
     right: 200px;

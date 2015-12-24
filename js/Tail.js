@@ -1,10 +1,10 @@
-var Tail = function(width_s, height_s, x_pos, y_pos, tail_type){
+var Tail = function(x_pos, y_pos, width_s, height_s, color, tail_type){
     this.tail_type = tail_type;
     this.width = width_s;
     this.height = height_s;
     this.x_pos = x_pos;
     this.y_pos = y_pos;
-    this.color = "#8d6e63";
+    this.color = color;
     this.divEl = document.createElement('div');
 
     this.initialize = function() {
