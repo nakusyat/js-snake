@@ -27,4 +27,6 @@ var Tail = function(x_pos, y_pos, width_s, height_s, color, tail_type){
         this.x_pos = x_pos;
         this.divEl.style.left = this.x_pos + 'px';
     };
+
+    this.initialize();
 };

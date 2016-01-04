@@ -9,7 +9,6 @@ var Snake = function(x_pos, y_pos, width, height, head_color, tail_color) {
 
     this.addHead = function() {
         var snakeHead = new Tail(this.x_pos, this.y_pos, this.width, this.height, this.head_color, false);
-        snakeHead.initialize();
         this.tails.push(snakeHead);
     };
 
@@ -45,7 +44,6 @@ var Snake = function(x_pos, y_pos, width, height, head_color, tail_color) {
             }
 
             var snakeTail = new Tail(x_pos, y_pos, this.width, this.height, this.tail_color, true);
-            snakeTail.initialize();
             this.tails.push(snakeTail);
         }
 

@@ -25,4 +25,6 @@ var Fruit = function(width_s, height_s, x_pos, y_pos, src) {
         this.x_pos = x_pos;
         this.imgEl.style.left = this.x_pos + 'px';
     };
+
+    this.initialize();
 };

@@ -135,7 +135,7 @@ function IncrementFruitEatPoint($scope) {
     if(fruit_eat_point === level_score) {
         level += 1;
         snakeSpeed -= 100;
-        level_score *= level;
+        level_score = 10 * level;
         
         clearInterval( myTimer );
         myTimer = setInterval(function() { if(control) {
@@ -169,7 +169,6 @@ function CreateFruit() {
     }
     var num_fruit = Math.floor( Math.random() * ( 1 + 4 - 1 ) ) + 1;
     var fruit = new Fruit(snake_tail_width, snake_tail_height, fruit_pos_x, fruit_pos_y, fruits_src[num_fruit - 1]);
-        fruit.initialize();
     if( fruits.length >= 1) {
         fruits[0].imgEl.parentNode.removeChild(fruits[0].imgEl);
         fruits.pop();
